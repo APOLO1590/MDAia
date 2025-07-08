@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Accidentabilidad</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Predictor de Accidentes</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#summary">Resumen</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#predictions">Predicciones</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#analysis">Análisis</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <section id="summary" class="mb-5">
+            <h2 class="mb-4"><i class="bi bi-clipboard-data"></i> Resumen Estadístico</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Accidentes</h5>
+                            <p class="card-text display-6" id="total-accidents">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Promedio Mensual</h5>
+                            <p class="card-text display-6" id="avg-accidents">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Mes con Más Accidentes</h5>
+                            <p class="card-text display-6" id="max-month">-</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-info mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Mes con Menos Accidentes</h5>
+                            <p class="card-text display-6" id="min-month">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Distribución por Puesto de Trabajo</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="positions-chart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                    <!--    <div class="card-header">
+                            <h5>Tendencia Histórica</h5>
+                        </div> -->
+                        <div class="card-body"> 
+                            <div id="trend-chart"></div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="predictions" class="mb-5">
+            <h2 class="mb-4"><i class="bi bi-graph-up"></i> Predicciones</h2>
+            <div class="card">
+                <div class="card-header">
+                    <h5>Pronóstico de Accidentes para los Próximos Meses</h5>
+                </div>
+                <div class="card-body">
+                    <div id="forecast-chart"></div>
+                    <div class="table-responsive mt-4">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Predicción</th>
+                                    <th>Límite Inferior</th>
+                                    <th>Límite Superior</th>
+                                </tr>
+                            </thead>
+                            <tbody id="forecast-table">
+                                <!-- Datos se llenarán con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="analysis" class="mb-5">
+            <h2 class="mb-4"><i class="bi bi-lightbulb"></i> Recomendaciones</h2>
+            <div class="card">
+                <div class="card-body">
+                    <ul class="list-group" id="recommendations-list">
+                        <li class="list-group-item">Enfoque en los meses de mayor riesgo históricamente</li>
+                        <li class="list-group-item">Implementar programas de seguridad específicos para operarios</li>
+                        <li class="list-group-item">Realizar auditorías de seguridad antes de períodos críticos</li>
+                        <li class="list-group-item">Capacitar al personal en meses previos a períodos de riesgo</li>
+                        <li class="list-group-item">Revisar protocolos de seguridad para puestos con mayor accidentalidad</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p>Sistema Predictivo de Accidentabilidad &copy; 2023</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/charts.js"></script>
+    <script>
+        // Obtener datos de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const filename = urlParams.get('file');
+        
+        if (filename) {
+            fetch(`/analyze/${filename}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Actualizar resumen
+                    document.getElementById('total-accidents').textContent = data.stats.total_accidentes;
+                    document.getElementById('avg-accidents').textContent = data.stats.avg_per_month.toFixed(2);
+                    document.getElementById('max-month').textContent = `${data.stats.max_month} (${data.stats.max_month_value.toFixed(1)})`;
+                    document.getElementById('min-month').textContent = `${data.stats.min_month} (${data.stats.min_month_value.toFixed(1)})`;
+                    
+                    // Generar gráficos
+                    renderPositionsChart(data.stats.puestos);
+                    renderForecastChart(data.predictions);
+                    renderForecastTable(data.predictions);
+                });
+        }
+    </script>
+</body>
+</html>
